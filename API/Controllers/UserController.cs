@@ -1,5 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using ProjectX.API.Auth;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using ProjectX.Core.Domain;
 using ProjectX.Core.Service.Interface;
 using System.Collections.Generic;
@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace API.Controllers
 {
-	
+	[Authorize]
 	[Produces("application/json")]
-	[Route("api/[controller]")]
+	[Route("api/user")]
 	public class UserController : Controller
 	{
 		private IUserService _userService;
@@ -19,39 +19,9 @@ namespace API.Controllers
 			_userService = userService;
 		}
 
-		// POST api/user
-		[HttpPost]
-		public async Task<IActionResult> Authentication([FromBody] User user)
-		{
-			if (!ModelState.IsValid)
-			{
-				return BadRequest(ModelState);
-			}
-
-			var usr = await _userService.Authenticate(user.Login, user.Password);
-
-			if (usr != null)
-			{
-
-				var token = new JwtTokenBuilder()
-														.AddSecurityKey(JwtSecurityKey.Create("key-value-token-expires"))
-														.AddSubject(user.Login)
-														.AddIssuer("issuerTest")
-														.AddAudience("bearerTest")
-														.AddClaim("MembershipId", "111")
-														.AddExpiry(1)
-														.Build();
-
-				return Ok(token.Value);
-
-			}
-			else
-				return Unauthorized();
-		}
-
-		// GET: api/users
+		// GET: api/user/
 		[HttpGet]
-		public async Task<List<User>> GetProjects()
+		public async Task<List<User>> GetAllUsers()
 		{
 			return await _userService.GetAllUsersAsync();
 		}

@@ -24,7 +24,6 @@ namespace ProjectX.API
 
 		public IConfiguration Configuration { get; }
 
-		// This method gets called by the runtime. Use this method to add services to the container.
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddCors(options =>
@@ -36,44 +35,44 @@ namespace ProjectX.API
 						.AllowCredentials());
 			});
 
-			//services.AddCors();
-
 			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-							.AddJwtBearer(options => {
-								options.TokenValidationParameters = new TokenValidationParameters
-								{
-									ValidateIssuer = true,
-									ValidateAudience = true,
-									ValidateLifetime = true,
-									ValidateIssuerSigningKey = true,
+				.AddJwtBearer(options =>
+				{
+					options.TokenValidationParameters = new TokenValidationParameters
+					{
+						ValidateIssuer = true,
+						ValidateAudience = true,
+						ValidateLifetime = true,
+						ValidateIssuerSigningKey = true,
 
-									ValidIssuer = Configuration.GetSection("Authentication:Issuer").Value,
-									ValidAudience = Configuration.GetSection("Authentication:Audience").Value,
-									IssuerSigningKey = JwtSecurityKey.Create(Configuration.GetSection("Authentication:SecurityKey").Value)
-								};
+						ValidIssuer = Configuration.GetSection("Authentication:Issuer").Value,
+						ValidAudience = Configuration.GetSection("Authentication:Audience").Value,
+						IssuerSigningKey = JwtSecurityKey.Create(Configuration.GetSection("Authentication:SecurityKey").Value)
+					};
 
-								options.Events = new JwtBearerEvents
-								{
-									OnAuthenticationFailed = context =>
-									{
-										Console.WriteLine("OnAuthenticationFailed: " + context.Exception.Message);
-										return Task.CompletedTask;
-									},
-									OnTokenValidated = context =>
-									{
-										Console.WriteLine("OnTokenValidated: " + context.SecurityToken);
-										return Task.CompletedTask;
-									}
-								};
-							});
+					options.Events = new JwtBearerEvents
+					{
+						OnAuthenticationFailed = context =>
+						{
+							Console.WriteLine("OnAuthenticationFailed: " + context.Exception.Message);
+							return Task.CompletedTask;
+						},
+						OnTokenValidated = context =>
+						{
+							Console.WriteLine("OnTokenValidated: " + context.SecurityToken);
+							return Task.CompletedTask;
+						}
+					};
+				});
 
 			services.AddAuthorization(options =>
 			{
-				options.AddPolicy("Member",
-						policy => policy.RequireClaim("MembershipId"));
+				options.AddPolicy("Administrator", policy => policy.RequireClaim("Administrator"));
+				options.AddPolicy("Moderator", policy => policy.RequireClaim("Moderator"));
+				options.AddPolicy("User", policy => policy.RequireClaim("User"));
 			});
 
-			services.AddAutoMapper();
+			services.AddAutoMapper(typeof(Startup));
 
 			services.AddMvc();
 
@@ -83,12 +82,15 @@ namespace ProjectX.API
 				options.Database = Configuration.GetSection("MongoConnection:Database").Value;
 			});
 
+			#region .   Services   .
 			services.AddTransient<IUserService, UserService>();
+			#endregion
 
+			#region .   Repository   .
 			services.AddTransient<IUserRepository, UserRepository>();
+			#endregion
 		}
 
-		// This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env)
 		{
 			// if (env.IsDevelopment())

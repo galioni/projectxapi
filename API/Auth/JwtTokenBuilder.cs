@@ -14,7 +14,7 @@ namespace ProjectX.API.Auth
 		private string issuer = "";
 		private string audience = "";
 		private Dictionary<string, string> claims = new Dictionary<string, string>();
-		private int expiryInMinutes = 5;
+		private int expiryInMinutes = 1;
 
 		public JwtTokenBuilder AddSecurityKey(SecurityKey securityKey)
 		{
@@ -52,9 +52,11 @@ namespace ProjectX.API.Auth
 			return this;
 		}
 
-		public JwtTokenBuilder AddExpiry(int expiryInMinutes)
+		public JwtTokenBuilder AddExpiry(string expiryInMinutes)
 		{
-			this.expiryInMinutes = expiryInMinutes;
+			if (!string.IsNullOrEmpty(expiryInMinutes))
+				Int32.TryParse(expiryInMinutes, out this.expiryInMinutes);
+
 			return this;
 		}
 
@@ -81,7 +83,7 @@ namespace ProjectX.API.Auth
 			return new JwtToken(token);
 		}
 
-		#region " private "
+		#region .   Private   .
 
 		private void EnsureArguments()
 		{
