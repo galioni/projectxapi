@@ -1,5 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -8,8 +7,6 @@ using Microsoft.IdentityModel.Tokens;
 using ProjectX.API.Auth;
 using ProjectX.Core.Domain;
 using ProjectX.Core.Repository;
-using ProjectX.Core.Service;
-using ProjectX.Core.Service.Interface;
 using System;
 using System.Threading.Tasks;
 
@@ -72,8 +69,6 @@ namespace ProjectX.API
 				options.AddPolicy("User", policy => policy.RequireClaim("User"));
 			});
 
-			services.AddAutoMapper(typeof(Startup));
-
 			services.AddMvc();
 
 			services.Configure<Settings>(options =>
@@ -81,10 +76,6 @@ namespace ProjectX.API
 				options.ConnectionString = Configuration.GetSection("MongoConnection:ConnectionString").Value;
 				options.Database = Configuration.GetSection("MongoConnection:Database").Value;
 			});
-
-			#region .   Services   .
-			services.AddTransient<IUserService, UserService>();
-			#endregion
 
 			#region .   Repository   .
 			services.AddTransient<IUserRepository, UserRepository>();

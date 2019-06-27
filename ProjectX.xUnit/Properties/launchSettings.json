@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "ProjectX.xUnit": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "Hosting Environment": "Production"
+      }
+    }
+  }
+}

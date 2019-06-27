@@ -1,29 +1,29 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProjectX.Core.Domain;
-using ProjectX.Core.Service.Interface;
+using ProjectX.Core.Repository;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace API.Controllers
+namespace ProjectX.API.Controllers
 {
 	[Authorize]
 	[Produces("application/json")]
 	[Route("api/user")]
 	public class UserController : Controller
 	{
-		private IUserService _userService;
+		private IUserRepository _userRepository;
 
-		public UserController(IUserService userService)
+		public UserController(IUserRepository userRepository)
 		{
-			_userService = userService;
+			_userRepository = userRepository;
 		}
 
 		// GET: api/user/
 		[HttpGet]
 		public async Task<List<User>> GetAllUsers()
 		{
-			return await _userService.GetAllUsersAsync();
+			return await _userRepository.GetAllUsersAsync();
 		}
 	}
 }

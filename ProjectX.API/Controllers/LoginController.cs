@@ -4,7 +4,7 @@ using Microsoft.Extensions.Configuration;
 using ProjectX.API.Auth;
 using ProjectX.Core.Domain;
 using ProjectX.Core.Enum;
-using ProjectX.Core.Service.Interface;
+using ProjectX.Core.Repository;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -14,25 +14,25 @@ namespace ProjectX.API.Controllers
 	[Route("api/login")]
 	public class LoginController : Controller
 	{
-		public LoginController(IUserService userService, IConfiguration configuration)
+		public LoginController(IUserRepository userRepository, IConfiguration configuration)
 		{
-			_userService = userService;
+			_userRepository = userRepository;
 			Configuration = configuration;
 		}
 
-		private IUserService _userService;
+		private IUserRepository _userRepository;
 		public IConfiguration Configuration { get; }
 
 		// POST api/login
 		[HttpPost]
-		public async Task<IActionResult> Authentication([FromBody] Login login)
+		public async Task<IActionResult> Authenticate([FromBody] Login login)
 		{
 			if (!ModelState.IsValid)
 			{
 				return BadRequest(ModelState);
 			}
 
-			var usr = await _userService.Authenticate(login.Email, login.Password);
+			var usr = await _userRepository.Authenticate(login.Email, login.Password);
 
 			if (usr != null)
 			{

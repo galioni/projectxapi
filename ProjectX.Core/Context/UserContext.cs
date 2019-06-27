@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 using ProjectX.Core.Domain;
-using ProjectX.Core.Model;
+using ProjectX.Core.Repository;
 
 namespace ProjectX.Core.Context
 {
@@ -16,19 +16,19 @@ namespace ProjectX.Core.Context
 				_database = client.GetDatabase(settings.Value.Database);
 		}
 
-		public IMongoCollection<UserModel> Users
+		public IMongoCollection<User> Users
 		{
 			get
 			{
-				return _database.GetCollection<UserModel>("User");
+				return _database.GetCollection<User>("User");
 			}
 		}
 
-		public IMongoCollection<UserHistoryModel> UserHistories
+		public IMongoCollection<UserHistory> UserHistories
 		{
 			get
 			{
-				return _database.GetCollection<UserHistoryModel>("UserHistory");
+				return _database.GetCollection<UserHistory>("UserHistory");
 			}
 		}
 	}
